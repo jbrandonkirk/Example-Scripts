@@ -1,0 +1,5 @@
+options nomlogic nomprint ;
+%macro sysx;
+%sysexec(echo df -hl); 
+%mend;
+%sysx; 

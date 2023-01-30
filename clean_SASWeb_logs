@@ -1,0 +1,31 @@
+#! /bin/ksh
+PATH=/bin:/sbin:/usr/bin:/usr/sbin
+export PATH
+
+MV="/bin/mv"
+MKDIR="/bin/mkdir"
+RM="/bin/rm"
+SED="/bin/sed"
+CUR_DIR=`/bin/pwd`
+RESULT=0
+
+echo "Cleaning SAS Web logs"
+for DATA_DIR in /opt/mis/sas94/config/Lev1/Web/Logs/SASServer* ; do
+  LOG_DIR=$(echo $DATA_DIR | $SED 's@/Logs/SASServer@/Logs_backup/SASServer@g')
+  echo "Backing up logs to ${LOG_DIR}"
+  ${MKDIR} -p ${LOG_DIR}
+  cd ${LOG_DIR}
+  if [[ "${PWD}" = "${LOG_DIR}" ]] ; then
+    for x in * ; do
+      ${RM} ${x}
+      ((RESULT=RESULT+$?))
+    done
+    ${MV} ${DATA_DIR}/* ${LOG_DIR}/
+  else
+    echo "Wrong Directory"
+    RESULT=1
+  fi
+
+done
+
+exit ${RESULT}

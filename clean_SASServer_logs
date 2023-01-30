@@ -1,0 +1,34 @@
+#! /bin/ksh
+PATH=/bin:/sbin:/usr/bin:/usr/sbin
+export PATH
+
+RM="/bin/rm"
+TOUCH="/bin/touch"
+CHOWN="/bin/chown"
+CUR_DIR=`/bin/pwd`
+RESULT=0
+
+echo "Cleaning SASServer logs"
+for DATA_DIR in /opt/mis/sas94/config/Lev1/Web/WebAppServer/SASServer*/logs ; do
+  LOG_DIR=$(echo $DATA_DIR | sed 's@WebAppServer/SASServer@WebAppServer/log_backup/SASServer@g')
+  echo "Backing up logs to ${LOG_DIR}"
+  mkdir -p ${LOG_DIR}
+  cp -pr ${DATA_DIR}/* ${LOG_DIR}/
+  cd ${DATA_DIR}
+  if [[ "${PWD}" = "${DATA_DIR}" ]] ; then
+    echo "in ${DATA_DIR}"
+    for x in * ; do
+      ${RM} ${x}
+      ((RESULT=RESULT+$?))
+    done
+    ${TOUCH} server.log
+    ${CHOWN} missas:mismeta server.log
+  else
+    echo "Wrong Directory"
+    RESULT=1
+  fi
+done
+
+cd ${CUR_DIR}
+
+exit ${RESULT}

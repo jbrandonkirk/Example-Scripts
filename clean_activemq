@@ -1,0 +1,25 @@
+#! /bin/ksh
+PATH=/bin:/sbin:/usr/bin:/usr/sbin
+export PATH
+
+DATA_DIR="/opt/mis/sas94/config/Lev1/Web/activemq/data"
+RM="/bin/rm"
+CUR_DIR=`/bin/pwd`
+RESULT=0
+
+echo "Cleaning activemq data directory"
+cd ${DATA_DIR}
+if [[ "${PWD}" = "${DATA_DIR}" ]] ; then
+  for x in *.log* *.pid kahadb ; do
+    ${RM} -rf ${x}
+    ((RESULT=RESULT+$?))
+  done
+else
+  echo "Wrong Directory"
+  RESULT=1
+fi
+
+cd ${CUR_DIR}
+
+exit ${RESULT}
+
